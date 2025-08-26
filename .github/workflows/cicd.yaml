@@ -1,0 +1,93 @@
+name: Helm Chart CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.13.2
+
+
+      - name: Check out index branch
+        run: |
+          git fetch origin index:index
+          git checkout index
+
+
+      - name: Move index.yaml to a temporary location
+        run: |
+          mv index.yaml /tmp/index.yaml || echo "No index.yaml found, will create a new one." && touch /tmp/index.yaml
+
+
+      - name: Checkout main branch again
+        run: git checkout main
+
+
+      - name: Detect changed Helm chart versions
+        id: detect-changes
+        run: |
+          CHANGED_CHARTS=""
+          for chart in app/* lib/*; do
+            if [ -f "$chart/Chart.yaml" ]; then
+              CHART_NAME=$(yq e '.name' "$chart/Chart.yaml")
+              CHART_VERSION=$(yq e '.version' "$chart/Chart.yaml")
+
+              echo "Checking chart: $CHART_NAME, version: $CHART_VERSION"
+
+              CHART_EXISTS=$(yq eval ".entries.${CHART_NAME} // []" /tmp/index.yaml \
+                | yq e -o=json '.' \
+                | jq --arg version "$CHART_VERSION" 'map(select(.version == $version)) | length > 0')
+                
+              if [ "$CHART_EXISTS" == "false" ]; then
+                CHANGED_CHARTS="$CHANGED_CHARTS $chart"
+                echo "Detected change in $chart (version: $CHART_VERSION)"
+              fi              
+            fi
+          done
+          echo "CHANGED_CHARTS=$CHANGED_CHARTS" >> $GITHUB_ENV
+
+
+      - name: Package changed charts
+        if: env.CHANGED_CHARTS != ''
+        run: |
+          for chart in $CHANGED_CHARTS; do
+            echo "Updating dependencies for $chart..."
+            helm dependency update $chart
+            helm package "$chart" --destination /tmp/chart
+          done
+
+
+      - name: Checkout index branch
+        if: env.CHANGED_CHARTS != ''
+        run: git checkout index
+
+
+      - name: Update index.yaml
+        if: env.CHANGED_CHARTS != ''
+        run: |
+          mkdir -p chart && mv /tmp/chart/* chart
+          helm repo index chart --url https://${GITHUB_REPOSITORY_OWNER}.github.io/helm-chart/chart/
+          mv chart/index.yaml index.yaml
+
+
+      - name: Commit and push changes
+        if: env.CHANGED_CHARTS != ''
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add chart index.yaml
+          git commit -m "Update index.yaml"
+          git push origin index
