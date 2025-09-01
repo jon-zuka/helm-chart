@@ -1,0 +1,32 @@
+# -- App configuration
+_configMaps:
+    # -- Name of the configmap
+  - name: config
+    # -- Path to mount to files into
+    path: /app
+    # -- Each key will be mapped to a file 
+    data:
+      .env: |
+        PORT=8080
+        NAME=Jon
+
+
+# -- Services for accesing pod ports
+_services:
+  # -- Name of the service
+  - name: http
+    # -- Ports of the service
+    ports:
+      - name: http
+        # -- Port number exposed by service
+        port: 80
+        # -- Port number exposed by container
+        containerPort: 8080
+
+
+# -- Image of the container
+_image:
+  repository: nginx
+  tag: latest
+  pullSecrets:
+    - name: ghcr

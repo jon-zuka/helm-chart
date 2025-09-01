@@ -8,7 +8,7 @@
     "repository" ""
     "tag" "0.0.0"
 	"pullPolicy" "IfNotPresent"
-	"pullSecret" (list)
+	"pullSecrets" (list)
   )
   "_pod" (dict "securityContext" (dict))
   "_serviceAccount" (dict "name" "default")
@@ -21,9 +21,15 @@
     "image" "{{ .Values._image.repository }}:{{ .Values._image.tag }}"
     "imagePullPolicy" "{{ .Values._image.pullPolicy }}"
     "securityContext" (dict)
-    "livenessProbe" (dict)
-    "readinessProbe" (dict)
+    "livenessProbe" (dict "httpGet" (
+      dict "path" "/"
+      "port" "{{ (index (index .Values._services 0).ports 0).containerPort }}"
+    ))
+    "readinessProbe" (dict "httpGet" (
+      dict "path" "/"
+      "port" "{{ (index (index .Values._services 0).ports 0).containerPort }}"
+    ))
     "resources" (dict)
   ) }}
-{{- $_ := set . "Values" (mustMerge $defaultValues .Values) }}
+{{- $_ := set . "Values" (mustMerge .Values $defaultValues) }}
 {{- end }} 

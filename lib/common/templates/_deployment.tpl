@@ -13,9 +13,8 @@ spec:
       annotations:
         checksum/config: {{ .Values | toYaml | sha256sum }}
     spec:
-      {{- with .Values._image.pullSecret }}
-      imagePullSecrets:
-        - name: {{ . }}
+      {{- with .Values._image.pullSecrets }}
+      imagePullSecrets: {{ . | toYaml | nindent 8 }}
       {{- end }}
       securityContext: {{ .Values._pod.securityContext | toYaml | nindent 8 }}
       serviceAccountName: {{ .Values._serviceAccount.name }}
