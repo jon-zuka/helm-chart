@@ -36,17 +36,19 @@ spec:
           imagePullPolicy: {{ .imagePullPolicy }}
           securityContext: {{ .securityContext | toYaml | nindent 12 }}
           livenessProbe: {{ .livenessProbe | toYaml | nindent 12 }}
-          readinessProbe: {{ .readinessProbe | toYaml | nindent 12 }}    
+          readinessProbe: {{ .readinessProbe | toYaml | nindent 12 }}
+          resources: {{ toYaml .resources | nindent 12 }}
           {{- with $.Values._services }}
           ports:
             {{- range . }}
             {{- range .ports }}
             - name: {{ .name }}
-              containerPort: {{ .containerPort }}
+              containerPort: {{ .containerPort | int }}
             {{- end }}
             {{- end }}
           {{- end }}
           volumeMounts: {{ toYaml $.Values._volumeMounts | nindent 12 }}
       {{- end }}
       volumes: {{ toYaml .Values._volumes | nindent 8 }}
+---
 {{- end }}

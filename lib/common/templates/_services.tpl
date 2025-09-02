@@ -26,7 +26,7 @@ spec:
 {{- range $services }}
 {{ $_ := set . "type" (.type | default "ClusterIP") }}
   {{- range .ports }}
-    {{ $_ := set . "containerPort" (.containerPort | default .port) }}
+    {{ $_ := set . "containerPort" (.containerPort | default .port) | int}}
     {{ $_ := set . "protocol" (.protocol | default "TCP") }}
   {{- end }}
 {{- end }}
