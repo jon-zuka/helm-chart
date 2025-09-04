@@ -1,8 +1,29 @@
 # common
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square) ![AppVersion: 0.1.4](https://img.shields.io/badge/AppVersion-0.1.4-informational?style=flat-square)
 
-Common helm functions and templates
+A Library Helm Chart for grouping common logic between charts. This chart is not deployable by itself.
+
+**Homepage:** <https://github.com/jon-zuka/helm-chart>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| Jon Zuka | <jon.zuka.42@gmail.com> | <https://github.com/jon-zuka> |
+
+## Source Code
+
+* <https://github.com/jon-zuka/helm-chart>
+
+## Cheatsheet
+
+### Create a Secret by providing credentials on the command line
+kubectl create secret docker-registry ghcr \
+  --docker-server=ghcr.io \
+  --docker-username=bot \
+  --docker-password=$YOUR_PASSWORD
+
 
 ## Values
 

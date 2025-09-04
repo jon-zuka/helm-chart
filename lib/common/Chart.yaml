@@ -1,6 +1,31 @@
+# Copyright (c) 2025 Jon Zuka
+# SPDX-License-Identifier: Apache-2.0
+
+annotations:
+  licenses: Apache-2.0
+
 apiVersion: v2
 name: common
-description: Common helm functions and templates  
+description: A Library Helm Chart for grouping common logic between charts. This chart is not deployable by itself.
 type: library
-version: 0.1.3
+version: 0.1.4
+appVersion: 0.1.4
+
+home: https://github.com/jon-zuka/helm-chart
+icon: https://raw.githubusercontent.com/jon-zuka/helm-chart/main/icon.png
+
+keywords:
+  - common
+  - helper
+  - template
+  - function
+  - jon-zuka
+
+maintainers:
+  - name: Jon Zuka
+    email: jon.zuka.42@gmail.com
+    url: https://github.com/jon-zuka
+
+sources:
+  - https://github.com/jon-zuka/helm-chart
 
